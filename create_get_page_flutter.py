@@ -10,13 +10,17 @@ def get_paths():
     try:
         # Get the name introduce by the terminal.
         name = sys.argv[1]
+        path = name
+        # If the there is a argument for the path of the directory then we will use it.
+        if sys.argv[2]:
+            path = '{}/{}_page'.format(sys.argv[2], name)
         # Print the name of the page and the name that will have the directory of the page.
-        print("Nombre: {name}, Path: {name}_page".format(name=name))
+        print("Nombre: {name}, Path: {path}".format(name=name, path=path))
         # If the directory does not exist create one.
-        if not os.path.exists("{}_page".format(name)):
-            subprocess.run(['mkdir', "{}_page".format(name)])
-        # Return the name of the page and the name of the directory
-        return name, "{}_page".format(name)
+        if not os.path.exists(path):
+            subprocess.run(['mkdir', path])
+        # Return the name of the page and the name of the directory        
+        return name, path
     except IndexError as e:
         # When a error happend finish the program, with the error message on the screen."
         print("Error: {}".format(e))
