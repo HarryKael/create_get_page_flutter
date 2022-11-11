@@ -27,12 +27,32 @@ def get_paths():
         sys.exit(1)
 
 
+def renaming(name:str, version:int = 1):
+    """This function is to rewrite the name with the form that it has to be, example: 'list_detail' => 'ListDetail'"""
+    if version == 1:
+        names:list[str] = name.split("_")
+        result = ''
+        for element in names:
+            result = '{}{}'.format(result, element.capitalize())
+    elif version == 2:
+        names:list[str] = name.split("_")
+        result = ''
+        for element in names:
+            if element == names[0]:
+                result = '{}{}'.format(result, element)
+            else:
+                result = '{}{}'.format(result, element.capitalize())
+    return result
+
+
 def create(name: str, path: str, path_placeholder: str, tipo: str):
     """Function to create the file of the page path passed at the arguments."""
     # Pattern to change the names of the classes.
     pattern = r"Placeholder"
     # Pattern to change the names of the imports.
     pattern2 = r"placeholder_"
+    # Pattern to change the names of the builders
+    pattern3 = r"builder\: \(Placeholder"
     # The path to create the file.
     full_path = "{path}/{name}_{type}.dart".format(path=path, name=name, type=tipo)
     # Check if the file already exists, if the file exists the function does not make any changes
@@ -47,9 +67,12 @@ def create(name: str, path: str, path_placeholder: str, tipo: str):
                 # If the pattern2 exists make the change of the name (imports).
                 if re.search(pattern2, line):
                     rows.append(re.sub(pattern2, '{}_'.format(name.lower()), line))
+                # If the patter3 of the builders is in the line then the program will change that for the text.
+                elif re.search(pattern3, line):
+                    rows.append(re.sub(pattern3, 'builder: ({}'.format(renaming(name, 2)), line))
                 else:
-                    # Changes the name (Classes).
-                    rows.append(re.sub(pattern, name.capitalize(), line))
+                    # Changes and rename the names (Classes).
+                    rows.append(re.sub(pattern, renaming(name), line))
             # Close the file.
             placeholder.close()
         # Open the file in the path.
@@ -78,4 +101,5 @@ def main():
     sys.exit(0)
 
 # Init the progra.
-main()
+if __name__ == '__main__':
+    main()
